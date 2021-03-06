@@ -68,13 +68,13 @@ void analizeLog(char *logFile, char *report) {
         printf("%s\n", date);
 
         //CONSEGUIR EL TIPO
-        for (size_t i=11;i<strlen(line);i++){
+       /* for (int i=11;i<strlen(line);i++){
             
             if (inPkgType){
-                if (line[i+4]=="-"){
+                if (line[i+4] =='-'){
                     pkgType="ALPM-SCRIPLET";
                     //SUMAR AQUÍ
-                }else if (line[i]=="A"){
+                }else if (line[i] =='A'){
                     pkgType="ALPM";
                     //SUMAR AQUÍ
                 }else{
@@ -83,7 +83,7 @@ void analizeLog(char *logFile, char *report) {
                 }
             }
 
-            if (line[i] == "["){
+            if (line[i] == '['){
                 inPkgType=true;
             }
 
@@ -91,7 +91,7 @@ void analizeLog(char *logFile, char *report) {
             
             printf("%c", line[i]);
         }
-        
+        */
         
         
     }
