@@ -44,7 +44,8 @@ void analizeLog(char *logFile, char *report) {
     char *operationType;
     char *pkgType;
     
-    char * str3;
+    char *strDate;
+    char *strPkgName;
     
     int numberALPM=0
         , numberPACMAN=0
@@ -60,7 +61,23 @@ void analizeLog(char *logFile, char *report) {
 
     while ((read = getline(&line, &len, fp)) != -1) {
         
+        char *storedChar;
 
+        //TOMA EL VALOR DE LA FECHA
+        storedChar = strtok(line, "]");
+
+        //TOMA EL VALOR DEL TIPO DE SCRIPT
+        storedChar = strtok(NULL, "]");
+
+        //QUE VA
+        storedChar = strtok(NULL, " ");
+        printf("%s\n", storedChar);
+
+
+
+
+
+/*
         int currentChar=1;
 
         bool inPkgType=false;
@@ -71,14 +88,16 @@ void analizeLog(char *logFile, char *report) {
         
         //CONSEGUIR LA FECHA
         for (currentChar;currentChar<11;currentChar++){
-            char *tmp=(char *) malloc(strlen(str3));
-            strcpy(tmp, str3);
-            str3 = (char *) malloc(1 + strlen(str3));
-            strcpy(str3, tmp);
-            str3[currentChar]=line[currentChar];
+            char *tmp=(char *) malloc(strlen(strDate));
+            strcpy(tmp, strDate);
+            strDate = (char *) malloc(1 + strlen(strDate));
+            strcpy(strDate, tmp);
+            strDate[currentChar]=line[currentChar];
+            free(tmp);
         }
 
-        strcpy(date, str3);
+        strcpy(date, strDate);
+        free(strDate);
         printf("%s\n", date);
 
         //CONSEGUIR EL TIPO
@@ -116,27 +135,51 @@ void analizeLog(char *logFile, char *report) {
 
         
         //CONSEGUIR INSTALLED (REINSTALLED), UPGRADED OR REMOVED
-           if (line[currentChar] =='i'  && line[currentChar+1] =='n' && line[currentChar+2] =='s' && line[currentChar+3] =='t'){
-                strcpy(operationType,"install");
-                
-            }else if (line[currentChar] =='r'  && line[currentChar+1] =='e' && line[currentChar+2] =='i' && line[currentChar+3] =='n'){
-                strcpy(operationType,"install");
-                
-            }else if (line[currentChar] =='r'  && line[currentChar+1] =='e' && line[currentChar+2] =='m' && line[currentChar+3] =='o'){
-                strcpy(operationType,"removed");
-                
-            }else if (line[currentChar] =='u'  && line[currentChar+1] =='p' && line[currentChar+2] =='g' && line[currentChar+3] =='r'){
-                strcpy(operationType,"upgraded");
-                
-            }else{
-                isCommonString=true;
-            }
         
+        if (line[currentChar] =='i'  && line[currentChar+1] =='n' && line[currentChar+2] =='s' && line[currentChar+3] =='t'){
+            strcpy(operationType,"installed");
+            currentChar+=9;
+                
+        }else if (line[currentChar] =='r'  && line[currentChar+1] =='e' && line[currentChar+2] =='i' && line[currentChar+3] =='n'){
+            strcpy(operationType,"installed");
+            currentChar+=11;
+            
+        }else if (line[currentChar] =='r'  && line[currentChar+1] =='e' && line[currentChar+2] =='m' && line[currentChar+3] =='o'){
+            strcpy(operationType,"removed");
+            currentChar+=7;
+        }else if (line[currentChar] =='u'  && line[currentChar+1] =='p' && line[currentChar+2] =='g' && line[currentChar+3] =='r'){
+            strcpy(operationType,"upgraded");
+            currentChar+=8;
+        }else{
+            isCommonString=true;
+        }
+
+        //CONSEGUIR PKGNAME
+        int counter=0;
+        int tmpCounter=1;
+        char *tmpCounter
+       
+        while (line[currentChar]!=' '){
+            //char *tmp =  malloc(tmpCounter * sizeof(char*));
+            /*strcpy(tmp2, strPkgName);
+            strPkgName = (char *) malloc(1 + strlen(strPkgName));
+            strcpy(strPkgName, tmp2);
+            strDate[counter]=line[currentChar];
+            counter++;
+            currentChar++;
+            */
+        }
+            //strcpy(pkgName, strPkgName);
         
+        /*if (operationType="install"){
+            
+        }
     }
 
     printf("Number of ALPM: %i\n Number of ALPM-SCRIPLET: %i\n Number of PACMAN: %i\n", numberALPM, numberALPMS, numberPACMAN);
         
+    */
+
     fclose(fp);
     if (line)
         free(line);
