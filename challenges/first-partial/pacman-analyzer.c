@@ -41,10 +41,16 @@ void analizeLog(char *logFile, char *report) {
 
     char date[10];
     char *pkgName;
+    char *operationType;
     char *pkgType;
+    
     char * str3;
+    
+    int numberALPM=0
+        , numberPACMAN=0
+        , numberALPMS=0;
 
-    bool inPkgType=false;
+    
     
 
 
@@ -53,49 +59,84 @@ void analizeLog(char *logFile, char *report) {
         exit(EXIT_FAILURE);
 
     while ((read = getline(&line, &len, fp)) != -1) {
-        printf("Retrieved line of length %zu:\n", read);
+        
+
+        int currentChar=1;
+
+        bool inPkgType=false;
+        bool isCommonString=false;
+
+        
+        
         
         //CONSEGUIR LA FECHA
-        for (size_t i=1;i<11;i++){
+        for (currentChar;currentChar<11;currentChar++){
             char *tmp=(char *) malloc(strlen(str3));
             strcpy(tmp, str3);
             str3 = (char *) malloc(1 + strlen(str3));
             strcpy(str3, tmp);
-            str3[i]=line[i];
+            str3[currentChar]=line[currentChar];
         }
 
         strcpy(date, str3);
         printf("%s\n", date);
 
         //CONSEGUIR EL TIPO
-       /* for (int i=11;i<strlen(line);i++){
+        for (currentChar;currentChar<read;currentChar++){
             
             if (inPkgType){
-                if (line[i+4] =='-'){
+                if (line[currentChar+4] =='-'){
                     pkgType="ALPM-SCRIPLET";
-                    //SUMAR AQUÍ
-                }else if (line[i] =='A'){
+                    numberALPMS++;
+                    currentChar+=13;
+                    inPkgType=false;
+                    break;
+                }else if (line[currentChar] =='A'){
                     pkgType="ALPM";
-                    //SUMAR AQUÍ
+                    numberALPM++;
+                    currentChar+=4;
+                    inPkgType=false;
+                    break;
                 }else{
                     pkgType="PACMAN";
-                    //SUMAR AQUÍ
+                    numberPACMAN++;
+                    currentChar+=6;
+                    inPkgType=false;
+                    break;
                 }
             }
 
-            if (line[i] == '['){
+            if (line[currentChar] == '['){
                 inPkgType=true;
             }
-
-            
-            
-            printf("%c", line[i]);
         }
-        */
+
+        printf("%s\n", pkgType);
+        
+
+        
+        //CONSEGUIR INSTALLED (REINSTALLED), UPGRADED OR REMOVED
+           if (line[currentChar] =='i'  && line[currentChar+1] =='n' && line[currentChar+2] =='s' && line[currentChar+3] =='t'){
+                strcpy(operationType,"install");
+                
+            }else if (line[currentChar] =='r'  && line[currentChar+1] =='e' && line[currentChar+2] =='i' && line[currentChar+3] =='n'){
+                strcpy(operationType,"install");
+                
+            }else if (line[currentChar] =='r'  && line[currentChar+1] =='e' && line[currentChar+2] =='m' && line[currentChar+3] =='o'){
+                strcpy(operationType,"removed");
+                
+            }else if (line[currentChar] =='u'  && line[currentChar+1] =='p' && line[currentChar+2] =='g' && line[currentChar+3] =='r'){
+                strcpy(operationType,"upgraded");
+                
+            }else{
+                isCommonString=true;
+            }
         
         
     }
 
+    printf("Number of ALPM: %i\n Number of ALPM-SCRIPLET: %i\n Number of PACMAN: %i\n", numberALPM, numberALPMS, numberPACMAN);
+        
     fclose(fp);
     if (line)
         free(line);

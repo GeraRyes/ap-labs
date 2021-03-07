@@ -27,7 +27,7 @@
 [2020-04-09T18:35:15+0000] [ALPM] installed libseccomp (2.4.2-1)
 [2020-04-09T18:35:15+0000] [ALPM] installed file (5.38-3)
 [2020-04-09T18:35:15+0000] [ALPM] installed findutils (4.7.0-2)
-[2020-04-09T18:35:15+0000] [ALPM] installed mpfr (4.0.2-2)
+[2020-04-09T18:35:15+0000] [ALPM] instaUPlled mpfr (4.0.2-2)
 [2020-04-09T18:35:15+0000] [ALPM] installed gawk (5.0.1-2)
 [2020-04-09T18:35:15+0000] [ALPM] installed pcre (8.44-1)
 [2020-04-09T18:35:15+0000] [ALPM] installed grep (3.4-1)
