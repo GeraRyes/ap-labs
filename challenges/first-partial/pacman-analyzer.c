@@ -9,7 +9,7 @@
 
 struct packageData {
     char *pkgName;
-    char *pkgType;
+    char *scriptType;
     char *installDate;
     char *lastUpdate;
     char *removalDate;
@@ -39,21 +39,9 @@ void analizeLog(char *logFile, char *report) {
     size_t len = 0;
     ssize_t read;
 
-    char date[10];
-    char *pkgName;
-    char *operationType;
-    char *pkgType;
     
-    char *strDate;
-    char *strPkgName;
-    
-    int numberALPM=0
-        , numberPACMAN=0
-        , numberALPMS=0;
-
-    
-    
-
+    int numberALPM=0, numberPACMAN=0, numberALPMS=0;
+    char *pkgName, *scriptType, *date, *operationType, *isInstalled, *wasUpgraded, *howManyUpgrades; 
 
     fp = fopen(logFile, "r");
     if (fp == NULL)
@@ -62,22 +50,61 @@ void analizeLog(char *logFile, char *report) {
     while ((read = getline(&line, &len, fp)) != -1) {
         
         char *storedChar;
+        bool desechar=false;
+        int from, to, i, j;
+        
+        
+        if (line[0]=='['){
 
-        //TOMA EL VALOR DE LA FECHA
-        storedChar = strtok(line, "]");
+            //TOMA EL VALOR DE LA FECHA
+            storedChar = strtok(line, "]");
+            from=1;
+            to=10;
+            date=(char*)malloc ( 11*sizeof(char) );
 
-        //TOMA EL VALOR DEL TIPO DE SCRIPT
-        storedChar = strtok(NULL, "]");
+            for(i=from,j=0; i<=to; i++,j++){
+                
+		        date[j]=storedChar[i];
+                
+            }
+            printf("%s\n", date);
+        
+            
 
-        //QUE VA
-        storedChar = strtok(NULL, " ");
-        printf("%s\n", storedChar);
+            //TOMA EL VALOR DEL TIPO DE SCRIPT 
+            storedChar = strtok(NULL, " ");
+            scriptType=(char*)malloc ( 11*sizeof(char) );
 
+            //CONTAR EL SCRIPT PARA LOS VALORES FINALES
+            if (storedChar=="[PACMAN]"){
+                numberPACMAN++;
+            }else if(storedChar=="[ALPM]"){
+                numberALPM++;
+            }else{
+                numberALPMS++;
+            }
 
+            //TIPO DE OPERACION(INSTALLED, REINSTALLED, REMOVED, UPGRADED)
+            storedChar = strtok(NULL, " ");
+            printf("%s ", storedChar);
 
+            if (storedChar=="installed" || storedChar=="reinstalled" || storedChar=="removed" || storedChar=="upgraded"){
 
+                //NOMBRE DEL PKG
+                storedChar = strtok(NULL, " ");
+                printf("%s\n", storedChar);
+                
+            }else{
+                desechar=true;
+            }
 
-/*
+            
+
+        }
+        
+        
+        /*
+
         int currentChar=1;
 
         bool inPkgType=false;
