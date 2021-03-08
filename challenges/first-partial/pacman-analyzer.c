@@ -42,10 +42,11 @@ struct FileData {
     int PACMAN;
     char *oldestPkg;
     char *newestPkg;
+    char *noUpgrades[20];
+    int upgradelessNo;
     int installed;
     int removed;
     int upgraded;
-    int currentlyInstalled;
 
 };
 
@@ -72,6 +73,7 @@ packageData* createItem(char *pkgName, char *date, char* operationType) {
     item->removalDate = (char*) malloc (strlen(date) + 1);
     item->lastUpdate = (char*) malloc (strlen(date) + 1);
     item->pkgName = (char*) malloc (strlen(pkgName) + 1);
+    item->howManyUpdates=0;
     strcpy(item->pkgName, pkgName);
 
     if (strcmp(operationType, "i") == 0){
@@ -124,20 +126,17 @@ void ht_insert(HashTable* table, packageData *item, char* operationType) {
                 if (strcmp(operationType, "r") == 0){
                     
                     strcpy(table->items[index]->removalDate, item->removalDate);
-                    table->items[index]->isInstalled=false;
                     return;
                     
                 }else if (strcmp(operationType, "i") == 0){
                     
                     strcpy(table->items[index]->installDate, item->installDate);
-                    table->items[index]->isInstalled=true;
                     return;
                     
                 }else if (strcmp(operationType, "u") == 0 ){
                     
                     strcpy(table->items[index]->lastUpdate, item->lastUpdate);
                     table->items[index]->howManyUpdates++;
-                    table->items[index]->isInstalled=true;
                     return;
                     
                 }{
@@ -166,21 +165,33 @@ packageData* htSearch(HashTable* table, char* pkgName) {
     return NULL;
 }
 
-//IMPRIME LA TABLA, ELEMENTO POR ELEMENTO
-void print_table(HashTable* table) {
-    printf("\nHash Table\n-------------------\n");
+//ESCRIBE LA TABLA, ELEMENTO POR ELEMENTO
+void writeTable(HashTable* table, FILE *fp) {
     for (int i=0; i<table->size; i++) {
         if (table->items[i]) {
-            printf("Index:%d, Nombre Paquete:%s, I:%s, R:%s, U:%s\n", i, table->items[i]->pkgName, table->items[i]->installDate, table->items[i]->removalDate, table->items[i]->lastUpdate);
+            fputs("- Package Name          : ", fp);
+            fputs(table->items[i]->pkgName, fp);
+            fputs("\n", fp);
+            fputs("   - Install date       : ", fp);
+            fputs(table->items[i]->installDate, fp);
+            fputs("\n", fp);
+            fputs("   - Last update date   : ", fp);
+            fputs(table->items[i]->lastUpdate, fp);
+            fputs("\n", fp);
+            fputs("   - How many updates   : ", fp);
+            fprintf(fp, "%d", table->items[i]->howManyUpdates);
+            fputs("\n", fp);
+            fputs("   - Removal date       : ", fp);
+            fputs(table->items[i]->removalDate, fp);
+            fputs("\n", fp);
         }
     }
-    printf("-------------------\n\n");
 }
 
 //LA NETA NO SÉ QUE ES ESTO, PERO NO LO QUITO
 void analizeLog(char *logFile, char *report);
 int cfileexists(const char * filename);
-void writeOutput(char * report, HashTable *table);
+void writeOutput(char * report, HashTable *table, FileData *stats);
 
 
 //MAIN
@@ -196,7 +207,7 @@ int main(int argc, char **argv) {
         analizeLog(argv[2], argv[4]);
         return 1;
     }else{
-        printf("Error, el archivo no existe\n");
+        fprintf(stderr, "Can't open input file!\n");
         return 0;
     }
     
@@ -214,11 +225,49 @@ int cfileexists(const char * filename){
 }
 
 //AQUI SE ESCRIBE EL DOCUMENTO DE SALIDA
-void writeOutput(char *report, HashTable *table){
+void writeOutput(char *report, HashTable *table, FileData *stats){
 
     FILE *fp = fopen (report, "w");
-    fputs("Documento de output\n", fp);
-    fputs("-------------------------\n", fp);    
+    fputs("Pacman Packages Report\n", fp);
+    fputs("-------------------------\n", fp);  
+    fputs("- Installed packages    : ", fp);
+    fprintf(fp, "%d\n", stats->installed);
+    fputs("- Removed packages      : ", fp);
+    fprintf(fp, "%d\n", stats->removed);
+    fputs("- Upgraded packages     : ", fp);
+    fprintf(fp, "%d\n", stats->upgraded);
+    fputs("- Currently installed   : ", fp);
+    fprintf(fp, "%d\n", (stats->installed - stats->removed));
+    fputs("-------------------------\n", fp);
+    fputs("General Stats\n", fp);
+    fputs("-------------------------\n", fp);
+    fputs("- Oldest package      : ", fp);
+    fprintf(fp, "%d\n", stats->oldestPkg);
+    fputs("- Newest package      : ", fp);
+    fprintf(fp, "%d\n", stats->newestPkg);
+
+    //WITHOUT UPGRADES
+    fputs("- Without upgrades    : ", fp);
+    for (int i=0;i<(stats->upgradelessNo);i++){
+        fputs(stats->noUpgrades[i], fp);
+        fputs(", ", fp);
+    }
+    fputs("\n", fp);
+
+    //SCRIPT TYPES
+    fputs("- [ALPM-SCRIPLET] count  : ", fp);
+    fprintf(fp, "%d\n", stats->ALPMS);
+    fputs("- [ALPM] count           : ", fp);
+    fprintf(fp, "%d\n", stats->ALPM);
+    fputs("- [PACMAN] count         : ", fp);
+    fprintf(fp, "%d\n", stats->PACMAN);
+    
+    //INDIVIDUAL PKGS
+    fputs("-------------------------\n", fp);
+    fputs("List of Packages\n", fp);
+    fputs("-------------------------\n", fp);
+    writeTable(table, fp);
+
     fclose(fp);
 }
 
@@ -239,6 +288,7 @@ void analizeLog(char *logFile, char *report) {
     char ins[]="i";
     char rem[]="r";
     char upg[]="u";
+    int installed=0, removed=0, upgraded=0;
 
     
     HashTable* ht = create_table(CAPACITY);
@@ -287,12 +337,15 @@ void analizeLog(char *logFile, char *report) {
                 if (strcmp(storedChar, "installed") == 0 || strcmp(storedChar, "reinstalled") == 0){
                     operationType= (char*)malloc(2);
                     memcpy(operationType, ins, 1);
+                    installed++;
                 }else if (strcmp(storedChar, "removed") == 0){
                     operationType= (char*)malloc(2);
-                    memcpy(operationType, rem, 1);;
+                    memcpy(operationType, rem, 1);
+                    removed++;
                 }else{
                     operationType= (char*)malloc(2);
                     memcpy(operationType, upg, 1);
+                    upgraded++;
                 }
                 
 
@@ -314,18 +367,25 @@ void analizeLog(char *logFile, char *report) {
         
     }
 
-    FileData *stats= {.insta}
+    FileData* stats = (FileData*) malloc (sizeof(FileData));
+    stats->installed=installed;
+    stats->removed=removed;
+    stats->upgraded=upgraded;
+    stats->ALPMS=numberALPMS;
+    stats->ALPM=numberALPM;
+    stats->PACMAN=numberPACMAN;
+    writeOutput(report,ht, stats);
 
-    writeOutput(report,ht);
+    printf("Report is generated at: [%s]\n", report);
 
-    print_table(ht);
+    //print_table(ht);
     fclose(fp);
     if (line)
         free(line);
     exit(EXIT_SUCCESS);
 
     
-    printf("Report is generated at: [%s]\n", report);
+    
 }
 
 
