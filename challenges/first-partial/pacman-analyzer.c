@@ -199,13 +199,14 @@ int main(int argc, char **argv) {
 
     //SI SE PASAN MENOS ARGUMENTOS DE LOS 4 QUE SON NECESARIOS
     if (argc < 4) {
-	printf("Usage:./pacman-analizer.o \n");
+	printf("Invalid number or agruments, should be running like this: \n");
+    printf("./pacman-analyzer -input source.txt -output destination.txt\n");
 	return 0;
     }
 
     if (cfileexists(argv[2]) == 1){
         analizeLog(argv[2], argv[4]);
-        return 1;
+        return 0;
     }else{
         fprintf(stderr, "Can't open input file!\n");
         return 0;
