@@ -7,9 +7,8 @@ Pacman Packages Report
 -------------------------
 General Stats
 -------------------------
-- Oldest package      : 0
-- Newest package      : 0
-- Without upgrades    : 
+- Without upgrades    : m4 db  gd   ix xz lz4    tdb sed  atk   js60 gmp  tar    ntp  zsh   gdbm base       kmod  grep flex  zlib    less  gzip  rest    lynx      bzip2  avahi dconf   libnl which groff  guile audit  tmate   expat  sshfs    c-ares     fabric        libxcb  libmpc     libmnl libusb          psmisc       vnstat  libidn2  libssh2    libpcap   libwebp   wayland  certbot    jbig2dec jansson  libsoup   ncurses     libtasn1  ruby-irb  ruby-xdg  cracklib readline  libpaper       fakeroot autoconf        pinentry         ruby-rdoc   xcb-proto  run-parts   libassuan   diffutils    findutils oniguruma coreutils   at-spi2-atk      python-pbr     libseccomp             tmuxinator  python-acme    ruby-reline netstat-nat libcanberra ruby-erubis  python-grip    python-zipp python-pytz  python-pep517 ghostscript    python-click python-jinja     libxshmfence   libxkbcommon libunistring    package-query     python-docopt python-invoke python-dotenv   python-josepy python-future     pacman-contrib dnssec-anchors   python-msgpack   python-pyrfc3339 aws-azure-login   cantarell-fonts terraformer-bin  python-filelock python-colorama   python-dateutil  python-markdown   python-progress python-pygments    python-configobj    python-dockerpty python-pycparser python-pyparsing python-pyopenssl  python-s3transfer python-zope-event  adwaita-icon-theme  python-jsonschema python-zope-proxy python-markupsafe wayland-protocols hicolor-icon-theme      python-pyrsistent python-contextlib2   python-cachecontrol python-webencodings python-itsdangerous   python-zope-hookable nodejs-gitlab-ci-lint python-parsedatetime  python-zope-interface python-docker-pycreds python-zope-component python-configargparse python-cached-property python-path-and-address  libnetfilter_conntrack  python-websocket-client python-zope-deprecation python-requests-toolbelt  gsettings-desktop-schemas  python-zope-deferredimport 
+
 - [ALPM-SCRIPLET] count  : 1454
 - [ALPM] count           : 2208
 - [PACMAN] count         : 602

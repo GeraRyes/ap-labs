@@ -188,7 +188,19 @@ void writeTable(HashTable* table, FILE *fp) {
     }
 }
 
-//LA NETA NO SÉ QUE ES ESTO, PERO NO LO QUITO
+void writeUpgradeless(HashTable* table, FILE *fp) {
+
+    for (int i=0; i<table->size; i++) {
+        if (table->items[i] && table->items[i]!=NULL) {
+            if (table->items[i]->howManyUpdates == 0)
+            fputs(table->items[i]->pkgName, fp);
+            fputs(" ", fp);
+
+        }
+    }
+    fputs("\n", fp);
+}
+
 void analizeLog(char *logFile, char *report);
 int cfileexists(const char * filename);
 void writeOutput(char * report, HashTable *table, FileData *stats);
@@ -242,17 +254,10 @@ void writeOutput(char *report, HashTable *table, FileData *stats){
     fputs("-------------------------\n", fp);
     fputs("General Stats\n", fp);
     fputs("-------------------------\n", fp);
-    fputs("- Oldest package      : ", fp);
-    fprintf(fp, "%d\n", stats->oldestPkg);
-    fputs("- Newest package      : ", fp);
-    fprintf(fp, "%d\n", stats->newestPkg);
-
+    
     //WITHOUT UPGRADES
     fputs("- Without upgrades    : ", fp);
-    for (int i=0;i<(stats->upgradelessNo);i++){
-        fputs(stats->noUpgrades[i], fp);
-        fputs(", ", fp);
-    }
+    writeUpgradeless(table, fp);
     fputs("\n", fp);
 
     //SCRIPT TYPES
