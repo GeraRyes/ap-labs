@@ -288,7 +288,7 @@ func calculatePositions() {
 		} else {
 			playerLaps++
 		}
-		fmt.Printf("%d°, Racer %d Laps: %d/%d SPEED: %d  Timer: %s\n", positionCounter, playerID+1, playerLaps, laps, speed, transitTime)
+		fmt.Printf("%d°, Racer %d Laps: %d/%d Timer: %s  Speed: %d \n", positionCounter, playerID+1, playerLaps, laps, transitTime, speed)
 		positionCounter++
 
 	}

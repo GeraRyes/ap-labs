@@ -1,5 +1,3 @@
-![grand-prix structure](grand_prix_flow.png)
-
 # Grand Prix
 
 ## Architecture
